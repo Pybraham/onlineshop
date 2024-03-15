@@ -15,10 +15,34 @@ Dieses Online-Shop-System wickelt Bestellungen nur per Nachnahme ab und ist nich
 ('Gadgets','Toy','Frisierkopf mit Schminke', 44.99, 'Frisierkopf mit Schminke', './product_images/frisierkopf-mit-schminke-9-4-4.jpg','toys'), <br />
 
 3.Create index.php, cart.php, login/out.php, Checkout<br />
-I show here how to use the style css with awsome fonts and discounts
+I show here how to use the style css with awsome fonts and discounts from the index.php(the whole codes privated)
+
+                     <div class="container">
+    <div class="row text-center py-5">
+        <div class="col-md-3 col-sm-6 my-3 my-md-0">
+            <form action="index.php" method="post">
+                <div class="card shadow">
+                    <div>
+                        <img src="./upload/product1.png" alt="Image1" class="img-fluid card-img-top">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Product 1</h5>
+                        <h6> <i class="fas fa-star"></i> </h6>
+                        <p class="card-text">Ein kurzer Beispieltext zum Aufbau der Karte.</p>
+                        <h5>
+                            <small><s class="text-secondary">29.99 $</s></small>
+                            <span class="price">49.99 $</span>
+                        </h5>
+                        <button type="submit" class="btn btn-warning my-3" name="add">In den Warenkorb <i class="fas fa-shopping-cart"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-3 col-sm-6 my-3 my-md-0"></div>
+        <div class="col-md-3 col-sm-6 my-3 my-md-0"></div>
+    </div>
+</div>
 ''' <?php
-
-
 
 <!doctype html>
 <html lang="en">
