@@ -100,3 +100,6 @@ I show here how to use the style css with awsome fonts and discounts from the in
 
 </body>
 </html>  '''
+
+4.![Image Alt Text] (https://github.com/Pybraham/onlineshop/blob/main/burgercheckout.png)
+Here is new another burgerhouse webpage example checkout.html
