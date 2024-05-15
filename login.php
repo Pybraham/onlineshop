@@ -1,153 +1,56 @@
-<?php
-session_start();
-include "db.php";
-if (isset($_POST["f_name"])) {
+<?php 
 
-	$f_name = $_POST["f_name"];
-	$l_name = $_POST["l_name"];
-	$email = $_POST['email'];
-	$password = $_POST['password'];
-	$repassword = $_POST['repassword'];
-	$mobile = $_POST['mobile'];
-	$address1 = $_POST['address1'];
-	$name = "/^[a-zA-Z ]+$/";
-	$emailValidation = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9]+(\.[a-z]{2,4})$/";
-	$number = "/^[0-9]+$/";
+// Handle form submission for user login
+if ($_SERVER["REQUEST_METHOD"] == "POST") { 
+    $username = $_POST["username"]; 
+    $password = $_POST["password"]; 
 
-if(empty($f_name) || empty($l_name) || empty($email) || empty($password) || empty($repassword) ||
-	empty($mobile) || empty($address1) ){
-		
-		echo "
-			<div class='alert alert-warning'>
-				<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>PLease Fill all fields..!</b>
-			</div>
-		";
-		exit();
-	} else {
-		if(!preg_match($name,$f_name)){
-		echo "
-			<div class='alert alert-warning'>
-				<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-				<b>this $f_name is not valid..!</b>
-			</div>
-		";
-		exit();
-	}
-	if(!preg_match($name,$l_name)){
-		echo "
-			<div class='alert alert-warning'>
-				<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-				<b>this $l_name is not valid..!</b>
-			</div>
-		";
-		exit();
-	}
-	if(!preg_match($emailValidation,$email)){
-		echo "
-			<div class='alert alert-warning'>
-				<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-				<b>this $email is not valid..!</b>
-			</div>
-		";
-		exit();
-	}
-	if($password != $repassword){
-		echo "
-			<div class='alert alert-warning'>
-				<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-				<b>password is not same</b>
-			</div>
-		";
-	}
-	if(!preg_match($number,$mobile)){
-		echo "
-			<div class='alert alert-warning'>
-				<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-				<b>Mobile number $mobile is not valid</b>
-			</div>
-		";
-		exit();
-	}
-	//existing email address in our database
-	$sql = "SELECT user_id FROM user_info WHERE email = '$email' LIMIT 1" ;
-	$check_query = mysqli_query($con,$sql);
-	$count_email = mysqli_num_rows($check_query);
-	if($count_email > 0){
-		echo "
-			<div class='alert alert-danger'>
-				<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-				<b>Email Address is already available Try Another email address</b>
-			</div>
-		";
-		exit();
-	} else {
-		
-		$sql = "INSERT INTO `user_info` 
-		(`user_id`, `first_name`, `last_name`, `email`, 
-		`password`, `mobile`, `address1`) 
-		VALUES (NULL, '$f_name', '$l_name', '$email', 
-		'$password', '$mobile', '$address1')";
-		$run_query = mysqli_query($con,$sql);
-		$_SESSION["uid"] = mysqli_insert_id($con);
-		$_SESSION["name"] = $f_name;
-		$ip_add = getenv("REMOTE_ADDR");
-		$sql = "UPDATE cart SET user_id = '$_SESSION[uid]' WHERE ip_add='$ip_add' AND user_id = -1";
-		if(mysqli_query($con,$sql)){
-			echo "register_success";
-			echo "<script> location.href='store.php'; </script>";
-            exit;
-		}
-	}
-	}
-	
-}
+    // Connect to the database 
+    $host = "localhost"; 
+    $dbname = "shop"; 
+    $username_db = "root"; //default MySQL username in XAMPP/MAMP
+    $password_db = "root"; 
 
+    try { 
+        $db = new PDO( 
+            "mysql:host=$host;dbname=$dbname", 
+            $username_db, 
+            $password_db
+        ); 
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
+
+        // Check if the user exists in the database 
+        $stmt = $db->prepare("SELECT * FROM users WHERE username = :username"); 
+        $stmt->bindParam(":username", $username); 
+        $stmt->execute(); 
+        $user = $stmt->fetch(PDO::FETCH_ASSOC); 
+
+        if ($user) { 
+            // Verify the password 
+            if (password_verify($password, $user["password"])) { 
+                // Set session variables
+                $_SESSION["loggedin"] = true;
+                $_SESSION["user"] = $user; 
+
+                // Redirect the user to the appropriate page after successful login
+                if(isset($_SESSION["redirect_to_cart"]) && $_SESSION["redirect_to_cart"] === true){
+                    // If the user was redirected to login page from cart, redirect them to cart.php
+                    header("Location: cart.php");
+                } else {
+                    // Otherwise, redirect them to the home page or any other default page
+                    header("Location: home.php");
+                }
+                exit;
+            } else { 
+                echo "<h2>Login Failed</h2>"; 
+                echo "Invalid username or password."; 
+            } 
+        } else { 
+            echo "<h2>Login Failed</h2>"; 
+            echo "User doesn't exist"; 
+        } 
+    } catch (PDOException $e) { 
+        echo "Connection failed: " . $e->getMessage(); 
+    } 
+} 
 ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
